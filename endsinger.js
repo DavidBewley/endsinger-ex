@@ -229,11 +229,11 @@ function determineSolution(){
     var finalRotation = gameState.bossArrowRotation - gameState.BossNumber + 1
 
     var rotateLeft = 0;
-    if(gameState.BossNumber == 1)
+    if(gameState.BossNumber == 3)
         rotateLeft = 2;
     if(gameState.BossNumber == 2)
         rotateLeft = 1;
-    if(gameState.BossNumber == 3)
+    if(gameState.BossNumber == 1)
         rotateLeft = 0;
 
     var finalRotation = gameState.bossArrowRotation - rotateLeft;
@@ -247,6 +247,20 @@ function determineSolution(){
 }
 
 function markOppositeSideFailure(finalRotation){
+    if(finalRotation == 1)
+    {
+        gameState.posASafe = false;
+        gameState.ANumber = Math.floor(Math.random() * 3) + 1
+        gameState.posBSafe = false;
+        gameState.BNumber = Math.floor(Math.random() * 3) + 1
+    }
+    if(finalRotation == 2)
+    {
+        gameState.posBSafe = false;
+        gameState.BNumber = Math.floor(Math.random() * 3) + 1
+        gameState.posCSafe = false;
+        gameState.CNumber = Math.floor(Math.random() * 3) + 1
+    }
     if(finalRotation == 3)
     {
         gameState.posCSafe = false;
@@ -260,20 +274,6 @@ function markOppositeSideFailure(finalRotation){
         gameState.ANumber = Math.floor(Math.random() * 3) + 1
         gameState.posDSafe = false;
         gameState.DNumber = Math.floor(Math.random() * 3) + 1
-    }
-    if(finalRotation == 1)
-    {
-        gameState.posASafe = false;
-        gameState.ANumber = Math.floor(Math.random() * 3) + 1
-        gameState.posBSafe = false;
-        gameState.BNumber = Math.floor(Math.random() * 3) + 1
-    }
-    if(finalRotation == 2)
-    {
-        gameState.posCSafe = false;
-        gameState.CNumber = Math.floor(Math.random() * 3) + 1
-        gameState.posBSafe = false;
-        gameState.BNumber = Math.floor(Math.random() * 3) + 1
     }
 }
 
