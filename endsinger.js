@@ -72,10 +72,35 @@ function clearActiveSprites(){
     app.stage.addChild(ringPositionD);
     app.stage.addChild(arrow);
 
+
+    if(gameState.phase >1){
+        NumberA.destroy({children:true, texture:true, baseTexture:false});
+        NumberB.destroy({children:true, texture:true, baseTexture:false});
+        NumberC.destroy({children:true, texture:true, baseTexture:false});
+        NumberD.destroy({children:true, texture:true, baseTexture:false});
+        NumberBoss.destroy({children:true, texture:true, baseTexture:false});
+
+        NumberA = new PIXI.Container();
+        NumberB = new PIXI.Container();
+        NumberC = new PIXI.Container();
+        NumberD = new PIXI.Container();
+        NumberBoss = new PIXI.Container();
+
+        app.stage.addChild(NumberA);
+        app.stage.addChild(NumberB);
+        app.stage.addChild(NumberC);
+        app.stage.addChild(NumberD);
+        app.stage.addChild(NumberBoss);
+    }
 }
 
 function displayGameState(gameState){
     if(gameState.phase == 1){
+
+        arrow = new PIXI.Container();
+        addArrowSpriteToContainer(arrow,2,2);
+        app.stage.addChild(arrow);
+
         ringPositionA = new PIXI.Container();
         ringPositionB = new PIXI.Container();
         ringPositionC = new PIXI.Container();
@@ -104,6 +129,11 @@ function displayGameState(gameState){
         app.stage.addChild(ringPositionD);
     }   
     if(gameState.phase == 2){
+
+        arrow = new PIXI.Container();
+        addArrowSpriteToContainer(arrow,2,2);
+        app.stage.addChild(arrow);
+
         NumberA = new PIXI.Container();
         NumberB = new PIXI.Container();
         NumberC = new PIXI.Container();
@@ -150,11 +180,49 @@ function displayGameState(gameState){
         app.stage.addChild(NumberC);
         app.stage.addChild(NumberD);
         app.stage.addChild(NumberBoss);
+        
+        NumberA.interactive = true;
+        NumberB.interactive = true;
+        NumberC.interactive = true;
+        NumberD.interactive = true;
+        
+        if(gameState.posAfinalAnswer)
+            NumberA.on('mousedown', function (e) {
+                gameState.correctAnswerFound = true;
+              });
+        else{
+            NumberA.on('mousedown', function (e) {
+                gameState.correctAnswerFound = false;
+              });
+        }
+        if(gameState.posBfinalAnswer)
+            NumberB.on('mousedown', function (e) {
+                gameState.correctAnswerFound = true;
+            });
+        else{
+            NumberB.on('mousedown', function (e) {
+                gameState.correctAnswerFound = false;
+              });
+        }
+        if(gameState.posCfinalAnswer)
+            NumberC.on('mousedown', function (e) {
+                gameState.correctAnswerFound = true;
+            });
+        else{
+            NumberC.on('mousedown', function (e) {
+                gameState.correctAnswerFound = false;
+              });
+        }
+        if(gameState.posDfinalAnswer)
+            NumberD.on('mousedown', function (e) {
+                gameState.correctAnswerFound = true;
+            });
+        else{
+            NumberD.on('mousedown', function (e) {
+                gameState.correctAnswerFound = false;
+              });
+        }
     }
-
-    arrow = new PIXI.Container();
-    addArrowSpriteToContainer(arrow,2,2);
-    app.stage.addChild(arrow);
 }
 
 function CreateGameStart(){
@@ -170,10 +238,12 @@ function CreateGameStart(){
         CNumber: 0,
         DNumber: 0,
         BossNumber: 0,
-        posAfinalAnswer: 0,
-        posBfinalAnswer: 0,
-        posCfinalAnswer: 0,
-        posDfinalAnswer: 0,
+        posAfinalAnswer: false,
+        posBfinalAnswer: false,
+        posCfinalAnswer: false,
+        posDfinalAnswer: false,
+        correctAnswerFound: false,
+        timer: 4000, //4000 is game like
         bossArrowRotation: Math.floor(Math.random() * 4) + 1
     }; 
 
@@ -190,18 +260,14 @@ function CreateGameStart(){
 }
 CreateGameStart();
 
-//After animations show
-function createNumbers(){
-    addSpriteToContainer(positionA,A1,AX,AY);
-    addSpriteToContainer(positionB,B2,BX,BY);
-    addSpriteToContainer(positionC,C1,CX,CY);
-    addSpriteToContainer(positionD,D3,DX,DY);
-    addSpriteToContainer(boss,Boss1,BossX,BossY);
-    addArrowSpriteToContainer(arrow,2,2,4);
-}
-//createNumbers();
-
 function updateGameState(){
+    if(gameState.phase == 3){       
+    }    
+    if(gameState.phase == 2){
+        gameState.phase = 3;
+        gameState.timer = 5000; //reset
+        console.log(gameState.correctAnswerFound);
+    }
     if(gameState.phase == 1){
         if(gameState.round < 3){
             gameState.round+=1;
@@ -217,10 +283,9 @@ function updateGameState(){
         {
             gameState.phase = 2;
             gameState.round = 1;
+            gameState.timer = 9000; //9 seconds in the game
             determineSolution();
         }
-    }
-    if(gameState.phase == 2){
     }
 }
 
@@ -244,41 +309,198 @@ function determineSolution(){
         finalRotation -= 4;
 
     markOppositeSideFailure(finalRotation);
+    markRandomOtherAsIncorrect();
+    markFinalAnswer();
 }
 
 function markOppositeSideFailure(finalRotation){
     if(finalRotation == 1)
     {
-        gameState.posASafe = false;
         gameState.ANumber = Math.floor(Math.random() * 3) + 1
-        gameState.posBSafe = false;
         gameState.BNumber = Math.floor(Math.random() * 3) + 1
     }
     if(finalRotation == 2)
     {
-        gameState.posBSafe = false;
         gameState.BNumber = Math.floor(Math.random() * 3) + 1
-        gameState.posCSafe = false;
         gameState.CNumber = Math.floor(Math.random() * 3) + 1
     }
     if(finalRotation == 3)
     {
-        gameState.posCSafe = false;
         gameState.CNumber = Math.floor(Math.random() * 3) + 1
-        gameState.posDSafe = false;
         gameState.DNumber = Math.floor(Math.random() * 3) + 1
     }
     if(finalRotation == 4)
     {
-        gameState.posASafe = false;
         gameState.ANumber = Math.floor(Math.random() * 3) + 1
-        gameState.posDSafe = false;
         gameState.DNumber = Math.floor(Math.random() * 3) + 1
     }
 }
 
+function markRandomOtherAsIncorrect(){
+    if(Math.floor(Math.random() * 2) + 1){
+        if(gameState.ANumber == 0){
+            if(gameState.posASafe == true)
+            {
+                gameState.ANumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.ANumber = 1;
+                else
+                    gameState.ANumber = 3
+            }
+        }
+        else if(gameState.BNumber == 0){
+            if(gameState.posBSafe == true)
+            {
+                gameState.BNumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.BNumber = 1;
+                else
+                    gameState.BNumber = 3
+            }
+        }
+        else if(gameState.CNumber == 0){
+            if(gameState.posCSafe == true)
+            {
+                gameState.CNumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.CNumber = 1;
+                else
+                    gameState.CNumber = 3
+            }
+        }
+        else if(gameState.DNumber == 0){
+            if(gameState.posDSafe == true)
+            {
+                gameState.DNumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.DNumber = 1;
+                else
+                    gameState.DNumber = 3
+            }
+        }
+    }
+    else{
+        if(gameState.DNumber == 0){
+            if(gameState.posDSafe == true)
+            {
+                gameState.DNumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.DNumber = 1;
+                else
+                    gameState.DNumber = 3
+            }
+        }
+        else if(gameState.CNumber == 0){
+            if(gameState.posCSafe == true)
+            {
+                gameState.CNumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.CNumber = 1;
+                else
+                    gameState.CNumber = 3
+            }
+        }
+        else if(gameState.BNumber == 0){
+            if(gameState.posBSafe == true)
+            {
+                gameState.BNumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.BNumber = 1;
+                else
+                    gameState.BNumber = 3
+            }
+        }
+        else if(gameState.ANumber == 0){
+            if(gameState.posASafe == true)
+            {
+                gameState.ANumber = 2;
+            }
+            else{
+                if(Math.floor(Math.random() * 2) + 1)
+                    gameState.ANumber = 1;
+                else
+                    gameState.ANumber = 3
+            }
+        }
+    }
+}
+
+function markFinalAnswer(){
+    if(gameState.ANumber == 0)
+    {
+        gameState.posAfinalAnswer = true;
+        if(gameState.posASafe == false)
+        {
+            gameState.ANumber = 2;
+        }
+        else{
+            if(Math.floor(Math.random() * 2) + 1)
+                gameState.ANumber = 1;
+            else
+                gameState.ANumber = 3
+        }
+    }
+    if(gameState.BNumber == 0)
+    {
+        gameState.posBfinalAnswer = true;
+        if(gameState.posBSafe == false)
+        {
+            gameState.BNumber = 2;
+        }
+        else{
+            if(Math.floor(Math.random() * 2) + 1)
+                gameState.BNumber = 1;
+            else
+                gameState.BNumber = 3
+        }
+    }
+    if(gameState.CNumber == 0)
+    {
+        gameState.posCfinalAnswer = true;
+        if(gameState.posCSafe == false)
+        {
+            gameState.CNumber = 2;
+        }
+        else{
+            if(Math.floor(Math.random() * 2) + 1)
+                gameState.CNumber = 1;
+            else
+                gameState.CNumber = 3
+        }
+    }
+    if(gameState.DNumber == 0)
+    {
+        gameState.posDfinalAnswer = true;
+        if(gameState.posDSafe == false)
+        {
+            gameState.DNumber = 2;
+        }
+        else{
+            if(Math.floor(Math.random() * 2) + 1)
+                gameState.DNumber = 1;
+            else
+                gameState.DNumber = 3
+        }
+    }
+}
+
+
 app.ticker.add((delta) => {
-    if(getTime() > 1000){
+    if(getTime() > gameState.timer){
         clearActiveSprites();
         updateGameState();
         console.log(gameState);
