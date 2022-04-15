@@ -249,7 +249,7 @@ function CreateGameStart(){
         posCfinalAnswer: false,
         posDfinalAnswer: false,
         correctAnswerFound: false,
-        timer: 2000, //4000 is game like
+        timer: 4000, //4000 is game like
         bossArrowRotation: Math.floor(Math.random() * 4) + 1
     }; 
 
