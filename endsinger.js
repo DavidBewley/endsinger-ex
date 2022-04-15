@@ -15,10 +15,6 @@ const DY = 1.45;
 const BossX = 2;
 const BossY = 2;
 
-const B1 = new PIXI.Sprite(new PIXI.Texture.from('Img/1.png'));
-const B2 = new PIXI.Sprite(new PIXI.Texture.from('Img/2.png'));
-const B3 = new PIXI.Sprite(new PIXI.Texture.from('Img/3.png'));
-
 //ArenaFloor
 const arenaFloor = new PIXI.Container();
 app.stage.addChild(arenaFloor);
@@ -71,27 +67,26 @@ function clearActiveSprites(){
     app.stage.addChild(ringPositionC);
     app.stage.addChild(ringPositionD);
     app.stage.addChild(arrow);
+}
 
+function clearNumberSprites(){
+     NumberA.destroy({children:true, texture:true, baseTexture:false});
+     NumberB.destroy({children:true, texture:true, baseTexture:false});
+     NumberC.destroy({children:true, texture:true, baseTexture:false});
+     NumberD.destroy({children:true, texture:true, baseTexture:false});
+     NumberBoss.destroy({children:true, texture:true, baseTexture:false});
 
-    if(gameState.phase >1){
-        NumberA.destroy({children:true, texture:true, baseTexture:false});
-        NumberB.destroy({children:true, texture:true, baseTexture:false});
-        NumberC.destroy({children:true, texture:true, baseTexture:false});
-        NumberD.destroy({children:true, texture:true, baseTexture:false});
-        NumberBoss.destroy({children:true, texture:true, baseTexture:false});
+     NumberA = new PIXI.Container();
+     NumberB = new PIXI.Container();
+     NumberC = new PIXI.Container();
+     NumberD = new PIXI.Container();
+     NumberBoss = new PIXI.Container();
 
-        NumberA = new PIXI.Container();
-        NumberB = new PIXI.Container();
-        NumberC = new PIXI.Container();
-        NumberD = new PIXI.Container();
-        NumberBoss = new PIXI.Container();
-
-        app.stage.addChild(NumberA);
-        app.stage.addChild(NumberB);
-        app.stage.addChild(NumberC);
-        app.stage.addChild(NumberD);
-        app.stage.addChild(NumberBoss);
-    }
+     app.stage.addChild(NumberA);
+     app.stage.addChild(NumberB);
+     app.stage.addChild(NumberC);
+     app.stage.addChild(NumberD);
+     app.stage.addChild(NumberBoss);
 }
 
 function displayGameState(gameState){
@@ -129,7 +124,6 @@ function displayGameState(gameState){
         app.stage.addChild(ringPositionD);
     }   
     if(gameState.phase == 2){
-
         arrow = new PIXI.Container();
         addArrowSpriteToContainer(arrow,2,2);
         app.stage.addChild(arrow);
@@ -174,13 +168,7 @@ function displayGameState(gameState){
             addSpriteToContainer(NumberBoss,new PIXI.Sprite(new PIXI.Texture.from('Img/2.png')),BossX,BossY);
         if(gameState.BossNumber == 3)
             addSpriteToContainer(NumberBoss,new PIXI.Sprite(new PIXI.Texture.from('Img/3.png')),BossX,BossY);
-
-        app.stage.addChild(NumberA);
-        app.stage.addChild(NumberB);
-        app.stage.addChild(NumberC);
-        app.stage.addChild(NumberD);
-        app.stage.addChild(NumberBoss);
-        
+       
         NumberA.interactive = true;
         NumberB.interactive = true;
         NumberC.interactive = true;
@@ -222,6 +210,24 @@ function displayGameState(gameState){
                 gameState.correctAnswerFound = false;
               });
         }
+        app.stage.addChild(NumberA);
+        app.stage.addChild(NumberB);
+        app.stage.addChild(NumberC);
+        app.stage.addChild(NumberD);
+        app.stage.addChild(NumberBoss);
+    }
+    if(gameState.phase == 3){
+        clearNumberSprites();
+        if(gameState.correctAnswerFound){
+            correct = new PIXI.Container();
+            addSpriteToContainer(correct,new PIXI.Sprite(new PIXI.Texture.from('Img/Correct.png')),3,3);
+            app.stage.addChild(correct);
+        }
+        else{
+            incorrect = new PIXI.Container();
+            addSpriteToContainer(incorrect,new PIXI.Sprite(new PIXI.Texture.from('Img/Incorrect.png')),3,3);
+            app.stage.addChild(incorrect);
+        }
     }
 }
 
@@ -243,7 +249,7 @@ function CreateGameStart(){
         posCfinalAnswer: false,
         posDfinalAnswer: false,
         correctAnswerFound: false,
-        timer: 4000, //4000 is game like
+        timer: 2000, //4000 is game like
         bossArrowRotation: Math.floor(Math.random() * 4) + 1
     }; 
 
@@ -261,7 +267,8 @@ function CreateGameStart(){
 CreateGameStart();
 
 function updateGameState(){
-    if(gameState.phase == 3){       
+    if(gameState.phase == 3){ 
+        gameState.phase = 4;      
     }    
     if(gameState.phase == 2){
         gameState.phase = 3;
@@ -503,7 +510,6 @@ app.ticker.add((delta) => {
     if(getTime() > gameState.timer){
         clearActiveSprites();
         updateGameState();
-        console.log(gameState);
         displayGameState(gameState);
         resetTimer();
     }
