@@ -116,7 +116,7 @@ function CreateGameStart(){
         posBSafe:false, 
         posCSafe:true, 
         posDSafe:false, 
-        bossArrowRotation: 1
+        bossArrowRotation: Math.floor(Math.random() * 4) + 1
     }; 
 
     displayGameState(gameState);
@@ -145,6 +145,8 @@ function updateGameState(){
             gameState.posCSafe = !gameState.posCSafe;
             gameState.posDSafe = !gameState.posDSafe;
             gameState.bossArrowRotation += 1;
+            if(gameState.bossArrowRotation > 4)
+                gameState.bossArrowRotation = 1;
         }
         else
         {
