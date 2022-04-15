@@ -80,7 +80,6 @@ function displayGameState(gameState){
         ringPositionB = new PIXI.Container();
         ringPositionC = new PIXI.Container();
         ringPositionD = new PIXI.Container();
-        arrow = new PIXI.Container();
                
         if(gameState.posASafe == true)
             addSpriteToContainer(ringPositionA,new PIXI.Sprite(new PIXI.Texture.from('Img/CircleEmpty.png')),AX,AY);
@@ -98,14 +97,64 @@ function displayGameState(gameState){
             addSpriteToContainer(ringPositionD,new PIXI.Sprite(new PIXI.Texture.from('Img/CircleEmpty.png')),DX,DY);
         else
             addSpriteToContainer(ringPositionD,new PIXI.Sprite(new PIXI.Texture.from('Img/CircleFull.png')),DX,DY);
-        addArrowSpriteToContainer(arrow,2,2);
 
         app.stage.addChild(ringPositionA);
         app.stage.addChild(ringPositionB);
         app.stage.addChild(ringPositionC);
         app.stage.addChild(ringPositionD);
-        app.stage.addChild(arrow);
     }   
+    if(gameState.phase == 2){
+        NumberA = new PIXI.Container();
+        NumberB = new PIXI.Container();
+        NumberC = new PIXI.Container();
+        NumberD = new PIXI.Container();
+        NumberBoss = new PIXI.Container();
+
+        if(gameState.ANumber == 1)
+            addSpriteToContainer(NumberA,new PIXI.Sprite(new PIXI.Texture.from('Img/1.png')),AX,AY);
+        if(gameState.ANumber == 2)
+            addSpriteToContainer(NumberA,new PIXI.Sprite(new PIXI.Texture.from('Img/2.png')),AX,AY);
+        if(gameState.ANumber == 3)
+            addSpriteToContainer(NumberA,new PIXI.Sprite(new PIXI.Texture.from('Img/3.png')),AX,AY);
+
+        if(gameState.BNumber == 1)
+            addSpriteToContainer(NumberB,new PIXI.Sprite(new PIXI.Texture.from('Img/1.png')),BX,BY);
+        if(gameState.BNumber == 2)
+            addSpriteToContainer(NumberB,new PIXI.Sprite(new PIXI.Texture.from('Img/2.png')),BX,BY);
+        if(gameState.BNumber == 3)
+            addSpriteToContainer(NumberB,new PIXI.Sprite(new PIXI.Texture.from('Img/3.png')),BX,BY);
+
+        if(gameState.CNumber == 1)
+            addSpriteToContainer(NumberC,new PIXI.Sprite(new PIXI.Texture.from('Img/1.png')),CX,CY);
+        if(gameState.CNumber == 2)
+            addSpriteToContainer(NumberC,new PIXI.Sprite(new PIXI.Texture.from('Img/2.png')),CX,CY);
+        if(gameState.CNumber == 3)
+            addSpriteToContainer(NumberC,new PIXI.Sprite(new PIXI.Texture.from('Img/3.png')),CX,CY);
+
+        if(gameState.DNumber == 1)
+            addSpriteToContainer(NumberD,new PIXI.Sprite(new PIXI.Texture.from('Img/1.png')),DX,DY);
+        if(gameState.DNumber == 2)
+            addSpriteToContainer(NumberD,new PIXI.Sprite(new PIXI.Texture.from('Img/2.png')),DX,DY);
+        if(gameState.DNumber == 3)
+            addSpriteToContainer(NumberD,new PIXI.Sprite(new PIXI.Texture.from('Img/3.png')),DX,DY);
+
+        if(gameState.BossNumber == 1)
+            addSpriteToContainer(NumberBoss,new PIXI.Sprite(new PIXI.Texture.from('Img/1.png')),BossX,BossY);
+        if(gameState.BossNumber == 2)
+            addSpriteToContainer(NumberBoss,new PIXI.Sprite(new PIXI.Texture.from('Img/2.png')),BossX,BossY);
+        if(gameState.BossNumber == 3)
+            addSpriteToContainer(NumberBoss,new PIXI.Sprite(new PIXI.Texture.from('Img/3.png')),BossX,BossY);
+
+        app.stage.addChild(NumberA);
+        app.stage.addChild(NumberB);
+        app.stage.addChild(NumberC);
+        app.stage.addChild(NumberD);
+        app.stage.addChild(NumberBoss);
+    }
+
+    arrow = new PIXI.Container();
+    addArrowSpriteToContainer(arrow,2,2);
+    app.stage.addChild(arrow);
 }
 
 function CreateGameStart(){
@@ -116,8 +165,24 @@ function CreateGameStart(){
         posBSafe:false, 
         posCSafe:true, 
         posDSafe:false, 
+        ANumber: 0,
+        BNumber: 0,
+        CNumber: 0,
+        DNumber: 0,
+        BossNumber: 0,
+        posAfinalAnswer: 0,
+        posBfinalAnswer: 0,
+        posCfinalAnswer: 0,
+        posDfinalAnswer: 0,
         bossArrowRotation: Math.floor(Math.random() * 4) + 1
     }; 
+
+    if(Math.floor(Math.random() * 2) + 1 == 1){
+        gameState.posASafe = false;
+        gameState.posBSafe = true;
+        gameState.posCSafe = false;
+        gameState.posDSafe = true;
+    }
 
     displayGameState(gameState);
     console.log(gameState);
@@ -152,12 +217,68 @@ function updateGameState(){
         {
             gameState.phase = 2;
             gameState.round = 1;
+            determineSolution();
         }
+    }
+    if(gameState.phase == 2){
+    }
+}
+
+function determineSolution(){
+    gameState.BossNumber = Math.floor(Math.random() * 3) + 1
+    var finalRotation = gameState.bossArrowRotation - gameState.BossNumber + 1
+
+    var rotateLeft = 0;
+    if(gameState.BossNumber == 1)
+        rotateLeft = 2;
+    if(gameState.BossNumber == 2)
+        rotateLeft = 1;
+    if(gameState.BossNumber == 3)
+        rotateLeft = 0;
+
+    var finalRotation = gameState.bossArrowRotation - rotateLeft;
+
+    if(finalRotation < 1)
+        finalRotation += 4;
+    if(finalRotation > 4)
+        finalRotation -= 4;
+
+    markOppositeSideFailure(finalRotation);
+}
+
+function markOppositeSideFailure(finalRotation){
+    if(finalRotation == 3)
+    {
+        gameState.posCSafe = false;
+        gameState.CNumber = Math.floor(Math.random() * 3) + 1
+        gameState.posDSafe = false;
+        gameState.DNumber = Math.floor(Math.random() * 3) + 1
+    }
+    if(finalRotation == 4)
+    {
+        gameState.posASafe = false;
+        gameState.ANumber = Math.floor(Math.random() * 3) + 1
+        gameState.posDSafe = false;
+        gameState.DNumber = Math.floor(Math.random() * 3) + 1
+    }
+    if(finalRotation == 1)
+    {
+        gameState.posASafe = false;
+        gameState.ANumber = Math.floor(Math.random() * 3) + 1
+        gameState.posBSafe = false;
+        gameState.BNumber = Math.floor(Math.random() * 3) + 1
+    }
+    if(finalRotation == 2)
+    {
+        gameState.posCSafe = false;
+        gameState.CNumber = Math.floor(Math.random() * 3) + 1
+        gameState.posBSafe = false;
+        gameState.BNumber = Math.floor(Math.random() * 3) + 1
     }
 }
 
 app.ticker.add((delta) => {
-    if(getTime() > 3000){
+    if(getTime() > 1000){
         clearActiveSprites();
         updateGameState();
         console.log(gameState);
